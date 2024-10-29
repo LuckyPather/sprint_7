@@ -21,7 +21,7 @@ class Courier:
             "password": password,
         }
         with allure.step(f"Захожу в учетную запись с данными {login}, {password}"):
-            response = requests.post(f'{BaseUrl.BASE_URL}{CouriersData.COURIERS_LOGIN}', json=data)
+            response = requests.post(f'{BaseUrl.BASE_URL}{CouriersData.COURIERS_CREATE}{CouriersData.COURIERS_LOGIN}', json=data)
         return response.status_code, response.json()
 
     def delete_courier(self, id):

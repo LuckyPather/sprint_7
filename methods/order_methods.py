@@ -6,7 +6,7 @@ from data import BaseUrl, OrdersData
 
 class Order:
     def create_order(self, firstname, lastname, address, metro_station, phone, rent_time, delivery_date, comment,
-                     color: list):
+                     color):
         data = {
             "firstName": firstname,
             "lastName": lastname,
@@ -20,7 +20,7 @@ class Order:
         }
         with allure.step(f"Создаю заказ с параметрами имя: {firstname}, фамилия: {lastname}, адрес: {address}, "
                          f"телефон: {phone}, кол-во дней аренды: {rent_time}, дата доставки: {delivery_date}, "
-                         f"комментарий: {comment}, цвет: {color}"):
+                         f"комментарий: {comment}, color :{color}"):
             response = requests.post(f'{BaseUrl.BASE_URL}{OrdersData.ORDERS_URL}', json=data)
         return response.status_code, response.json()
 
@@ -38,17 +38,20 @@ class Order:
             response = requests.get(f'{BaseUrl.BASE_URL}{OrdersData.ORDER_TRACK}', params=params)
         return response.status_code, response.json()
 
-    def get_orders_list(self, courier_id, nearest_station, limit, page):
-        params = {
-            "courierId": courier_id,
-            "nearestStation": nearest_station,
-            "limit": limit,
-            "page": page
-        }
+    def get_orders_list(self, courier_id: str = "", nearest_station: str = "", limit=10, page=0):
+        params = {}
+        if courier_id is not None:
+            params["courierId"] = courier_id
+        if nearest_station is not None:
+            params["nearestStation"] = nearest_station
+        if limit is not None:
+            params["limit"] = limit
+        if page is not None:
+            params["page"] = page
         with allure.step(f"Получаю список заказов по переданным параметрам {courier_id}, "
                          f"{nearest_station}, {limit}, {page}"):
             response = requests.get(f"{BaseUrl.BASE_URL}{OrdersData.ORDERS_URL}", params=params)
-        return response
+        return response.status_code, response.json()
 
     def cancel_order(self, track: int):
         data = {"track": track}
